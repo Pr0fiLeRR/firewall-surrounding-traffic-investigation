@@ -1,0 +1,25 @@
+//#########################################################################
+//##  Data Source: Proxy / Web Gateway (CommonSecurityLog)
+//##  AUTHOR: IGOR OLIVEIRA (#IO)
+//##  Description: User navigation to malicious or suspicious web resources
+//##  MITRE ATT&CK Mapping
+//##    Tactic: Initial Access
+//##      Technique: T1189 - Drive-by Compromise
+//#########################################################################
+let endDate = datetime(2026-02-02T23:00:00Z); // Update DateTime accordingly
+let startDate = endDate -5min; // Update for according timeframe
+CommonSecurityLog
+    | where DeviceProduct == "PAN-OS"
+    | where TimeGenerated between (startDate .. endDate)
+    | where SourceUserName == "DOMAIN_NAME\\User_Name"
+    // | where RequestURL contains "domain.tld"
+    | where isnotempty(RequestURL)
+    | project-reorder
+        TimeGenerated,
+        RequestURL,
+        SourceUserName,
+        DeviceCustomString2,
+        DeviceAction,
+        SourceIP,
+        DestinationPort,
+        DestinationIP
